@@ -546,7 +546,7 @@
             top: 100%;
             background-color: var(--card-bg);
             min-width: 160px;
-            box-shadow: 0 8px极速时时彩
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1); /* FIXED */
             z-index: 1;
             border-radius: 4px;
             border: 1px solid var(--border);
@@ -670,7 +670,7 @@
                 
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type极速时时彩" id="login-password" placeholder="Enter your password" required>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
                 </div>
                 
                 <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
@@ -684,7 +684,7 @@
     <div id="register-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-register">&times;</span>
-            <h2><i极速时时彩 class="fas fa-user-plus"></i> Register for CloudForum</h2>
+            <h2><i class="fas fa-user-plus"></i> Register for CloudForum</h2>
             <form id="register-form">
                 <div class="form-group">
                     <label for="register-username">Username</label>
@@ -696,7 +696,7 @@
                     <input type="email" id="register-email" placeholder="Enter your email" required>
                 </div>
                 
-                <极速时时彩div class="form-group">
+                <div class="form-group">
                     <label for="register-password">Password</label>
                     <input type="password" id="register-password" placeholder="Create a password" required>
                 </div>
@@ -715,7 +715,7 @@
     </div>
     
     <div id="profile-modal" class="modal">
-        <div class极速时时彩="modal-content">
+        <div class="modal-content">
             <span class="close" id="close-profile">&times;</span>
             <h2><i class="fas fa-user"></i> Edit Profile</h2>
             <form id="profile-form">
@@ -732,18 +732,18 @@
                 
                 <div class="form-group">
                     <label for="profile-password">New Password (leave blank to keep current)</label>
-                    <input type="password" id="profile-password" placeholder极速时时彩="New password">
+                    <input type="password" id="profile-password" placeholder="New password">
                 </div>
                 
                 <div class="form-group">
-                    <label for极速时时彩="profile-password-confirm">Confirm New Password</label>
+                    <label for="profile-password-confirm">Confirm New Password</label>
                     <input type="password" id="profile-password-confirm" placeholder="Confirm new password">
                 </div>
                 
                 <div class="form-group">
                     <label for="profile-current-password">Current Password (required to save changes)</label>
                     <input type="password" id="profile-current-password" placeholder="Current password" required>
-                </极速时时彩div>
+                </div>
                 
                 <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
             </form>
@@ -794,7 +794,7 @@
                 
                 <div class="form-group">
                     <label for="edit-user-email">Email</label>
-                    <input type="email" id极速时时彩="edit-user-email" required>
+                    <input type="email" id="edit-user-email" required>
                 </div>
                 
                 <div class="form-group">
@@ -811,7 +811,7 @@
                     <input type="password" id="edit-user-password" placeholder="New password">
                 </div>
                 
-                <button type="submit" class="btn"><i class="fas极速时时彩 fa-save"></i> Save Changes</button>
+                <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
             </form>
         </div>
     </div>
@@ -858,7 +858,19 @@
                         </div>
                     </div>
                 </span>
-                <button class="btn" id="login-btn"><i class="fas fa-user"></i> Login</button>
+                                .pr                                .profile-dropdown {
+                                    display: none;
+                                    position: absolute;
+                                    right: 0;
+                                    top: 100%;
+                                    background-color: var(--card-bg);
+                                    min-width: 160px;
+                                    box-shadow: 0 8px 16px rgba(0,0,0,0.1); /* FIXED */
+                                    z-index: 1;
+                                    border-radius: 4px;
+                                    border: 1px solid var(--border);
+                                    margin-top: 5px;
+                                }
                 <button class="btn btn-success" id="admin-btn" style="display: none;"><i class="fas fa-cog"></i> Admin</button>
             </div>
         </div>
@@ -879,7 +891,7 @@
                 <div class="stat-label">Users</div>
             </div>
             <div class="stat">
-                <div class极速时时彩="stat-number" id="online-count">1</div>
+                <div class="stat-number" id="online-count">1</div>
                 <div class="stat-label">Online</div>
             </div>
         </div>
@@ -973,7 +985,7 @@
         
         <div class="forum-header">
             <h2>Recent Discussions</h2>
-            <button id="new极速时时彩-thread-btn" class="btn"><极速时时彩i class="fas fa-plus"></i> New Thread</button>
+            <button id="new-thread-btn" class="btn"><i class="fas fa-plus"></i> New Thread</button>
         </div>
         
         <div class="thread-list" id="thread-list">
@@ -1005,7 +1017,7 @@
         </div>
         
         <div id="new-thread-form" class="new-thread-form" style="display: none;">
-            <h2 class="form-title">Create a New Thread</极速时时彩h2>
+            <h2 class="form-title">Create a New Thread</h2>
             <form id="thread-form">
                 <div class="form-group">
                     <label for="thread-title">Title</label>
@@ -1170,7 +1182,7 @@
             const username = document.getElementById('register-username').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
-           极速时时彩 const passwordConfirm = document.getElementById('register-password-confirm').value;
+            const passwordConfirm = document.getElementById('register-password-confirm').value;
             
             if (password !== passwordConfirm) {
                 showNotification('Passwords do not match!', false);
@@ -1222,7 +1234,7 @@
         document.getElementById('profile-link').addEventListener('click', function() {
             if (!currentUser) return;
             
-            document.getElementById极速时时彩('profile-username').value = currentUser.username;
+            document.getElementById('profile-username').value = currentUser.username;
             document.getElementById('profile-email').value = currentUser.email;
             document.getElementById('profile-modal').style.display = 'flex';
         });
@@ -1575,7 +1587,7 @@
                 const pageBtn = document.createElement('span');
                 pageBtn.className = `page-btn ${i === postPage ? 'active' : ''}`;
                 pageBtn.textContent = i;
-                pageBtn.addEventListener('click极速时时彩', () => {
+                pageBtn.addEventListener('click', () => {
                     postPage = i;
                     renderPostList();
                 });
@@ -1655,7 +1667,7 @@
                     behavior: 'smooth'
                 });
             } else {
-                new极速时时彩ThreadForm.style.display = 'none';
+                newThreadForm.style.display = 'none';
             }
         });
         
@@ -1745,7 +1757,7 @@
                     apiStatus.innerHTML = '<span style="color: green;">Connected successfully!</span>';
                     showNotification('API connection successful!');
                 } else {
-                    apiStatus.innerHTML = `<span style="color: red;">Error: ${极速时时彩response.status} ${response.statusText}</span>`;
+                    apiStatus.innerHTML = `<span style="color: red;">Error: ${response.status} ${response.statusText}</span>`;
                     showNotification('API connection failed', false);
                 }
             } catch (error) {
@@ -1808,7 +1820,7 @@
                         <div class="thread-icon">
                             <i class="fas fa-comment"></i>
                         </div>
-                        <div class极速时时彩="thread-content">
+                        <div class="thread-content">
                             <div class="thread-title">${title}</div>
                             <div class="thread-meta">Started by <strong>${currentUser.username}</strong>, just now</div>
                             <div class="thread-stats">
@@ -1827,7 +1839,7 @@
                     
                     // Update stats
                     document.getElementById('threads-count').textContent = 
-                        parseInt(document.getElementById('thread极速时时彩s-count').textContent) + 1;
+                        parseInt(document.getElementById('threads-count').textContent) + 1;
                     
                     // Reset form and hide it
                     threadForm.reset();
@@ -1956,7 +1968,7 @@
                     
                 } catch (error) {
                     console.error('Error posting reply:', error);
-                    showNotification('Error posting reply: '极速时时彩 + error.message, false);
+                    showNotification('Error posting reply: ' + error.message, false);
                 }
             }
         });
@@ -1994,8 +2006,8 @@
                                 <div class="thread-title">${thread.title}</div>
                                 <div class="thread-meta">Started by <strong>${thread.author}</strong>, ${new Date(thread.created_at).toLocaleDateString()}</div>
                                 <div class="thread-stats">
-                                    <span class极速时时彩="thread-stat"><i class="fas fa-comments"></i> 0 replies</span>
-                                    <span class="thread-stat"><极速时时彩i class="fas fa-eye"></i> 0 views</span>
+                                    <span class="thread-stat"><i class="fas fa-comments"></i> 0 replies</span>
+                                    <span class="thread-stat"><i class="fas fa-eye"></i> 0 views</span>
                                 </div>
                             </div>
                         `;
@@ -2014,7 +2026,7 @@
                 } else {
                     // No threads in database
                     threadList.innerHTML = `
-                        <极速时时彩div class="thread">
+                        <div class="thread">
                             <div class="thread-icon">
                                 <i class="fas fa-info-circle"></i>
                             </div>
