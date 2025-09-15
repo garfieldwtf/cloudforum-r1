@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudForum - Cloudflare R1 SQL Integration</title>
+    <title>CloudForum - Connected to R1 Database</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -350,42 +350,6 @@
             }
         }
 
-        .cloudflare-info {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .cloudflare-info h2 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .steps {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-
-        .steps li {
-            margin-bottom: 8px;
-        }
-
-        .code-block {
-            background-color: var(--dark);
-            color: white;
-            padding: 15px;
-            border-radius: 4px;
-            font-family: monospace;
-            overflow-x: auto;
-            margin: 15px 0;
-        }
-        
         .notification {
             position: fixed;
             top: 20px;
@@ -429,34 +393,18 @@
             cursor: pointer;
         }
         
-        .tab-container {
-            margin-top: 20px;
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--secondary);
         }
         
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-        
-        .tab.active {
-            border-bottom: 2px solid var(--primary);
-            color: var(--primary);
-            font-weight: 500;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
+        .error {
+            color: var(--danger);
+            padding: 10px;
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: 4px;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -529,149 +477,8 @@
         </div>
         
         <div class="thread-list" id="thread-list">
-            <!-- Threads will be loaded here -->
-        </div>
-        
-        <div class="cloudflare-info">
-            <h2><i class="fas fa-cloud-upload-alt"></i> Deploying to Cloudflare with R1 Database</h2>
-            
-            <div class="tab-container">
-                <div class="tabs">
-                    <div class="tab active" data-tab="steps">Steps</div>
-                    <div class="tab" data-tab="worker">Worker Code</div>
-                    <div class="tab" data-tab="schema">Database Schema</div>
-                </div>
-                
-                <div class="tab-content active" id="steps-content">
-                    <p>This forum is designed to work with Cloudflare Pages and R1 SQL database. Follow these steps:</p>
-                    <ol class="steps">
-                        <li>Create a GitHub repository and upload your forum files</li>
-                        <li>Log in to your Cloudflare dashboard and select "Pages"</li>
-                        <li>Click "Create a project" and connect your GitHub account</li>
-                        <li>Select the repository containing your forum</li>
-                        <li>Configure build settings (no build command needed for static HTML)</li>
-                        <li>Click "Deploy"</li>
-                        <li>Create an R1 database in the Cloudflare dashboard</li>
-                        <li>Create a Worker to handle database operations</li>
-                    </ol>
-                    
-                    <h3>Detailed Worker Setup:</h3>
-                    <ol class="steps">
-                        <li>Go to Workers & Pages → Overview</li>
-                        <li>Click "Create Worker"</li>
-                        <li>Name your worker (e.g., "forum-api")</li>
-                        <li>Click "Create Worker" (not "Deploy" yet)</li>
-                        <li>Replace the default code with the Worker code provided</li>
-                        <li>Click "Save and Deploy"</li>
-                        <li>Go to Settings → Variables → Bindings → Database Bindings</li>
-                        <li>Click "Add binding"</li>
-                        <li>Set Variable Name to "DB"</li>
-                        <li>Select your R1 database</li>
-                        <li>Click "Save"</li>
-                    </ol>
-                </div>
-                
-                <div class="tab-content" id="worker-content">
-                    <div class="code-block">
-// worker.js - Cloudflare Worker for R1 SQL database
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    
-    // Handle CORS preflight requests
-    if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-      });
-    }
-    
-    // Handle API routes
-    if (url.pathname === '/api/threads' && request.method === 'GET') {
-      // Get all threads from R1 database
-      try {
-        const result = await env.DB.prepare('SELECT * FROM threads ORDER BY created_at DESC').all();
-        return new Response(JSON.stringify(result), {
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { 
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      }
-    }
-    
-    if (url.pathname === '/api/threads' && request.method === 'POST') {
-      // Create a new thread in R1 database
-      try {
-        const data = await request.json();
-        const { title, content, author } = data;
-        
-        const result = await env.DB.prepare(
-          'INSERT INTO threads (title, content, author) VALUES (?, ?, ?)'
-        ).bind(title, content, author).run();
-        
-        return new Response(JSON.stringify({ success: true, id: result.meta.last_row_id }), {
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { 
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      }
-    }
-    
-    return new Response('Not found', { status: 404 });
-  }
-}
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="schema-content">
-                    <div class="code-block">
--- SQL to create the necessary tables in R1
-CREATE TABLE threads (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  content TEXT NOT NULL,
-  author TEXT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE posts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  thread_id INTEGER NOT NULL,
-  content TEXT NOT NULL,
-  author TEXT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (thread_id) REFERENCES threads (id)
-);
-
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-                    </div>
-                </div>
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading threads...
             </div>
         </div>
         
@@ -696,18 +503,33 @@ CREATE TABLE users (
                 <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Post Thread</button>
             </form>
         </div>
+        
+        <div class="new-thread-form">
+            <h2 class="form-title">Connection Status</h2>
+            <div class="form-group">
+                <label>API Endpoint:</label>
+                <div class="code-block" style="background-color: var(--card-bg); color: var(--text); border: 1px solid var(--border);">
+                    https://forum-api.garf.workers.dev/
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Status:</label>
+                <div id="api-status">Checking connection...</div>
+            </div>
+            <button id="test-api-btn" class="btn"><i class="fas fa-bolt"></i> Test API Connection</button>
+        </div>
     </main>
     
     <footer>
         <div class="container">
-            <p>© 2023 CloudForum R1. This forum is designed to work with Cloudflare Pages and R1 SQL database.</p>
-            <p>In a real implementation, data would be stored in Cloudflare's R1 database via Workers.</p>
+            <p>© 2023 CloudForum R1. Connected to Cloudflare R1 Database via Worker.</p>
+            <p>API Endpoint: https://forum-api.garf.workers.dev/</p>
         </div>
     </footer>
 
     <script>
-        // API base URL - would be your Cloudflare Worker URL in production
-        const API_BASE = 'https://forum-api.garf.workers.dev/';
+        // API base URL - your Cloudflare Worker URL
+        const API_BASE = 'https://forum-api.garf.workers.dev';
         
         // Show notification function
         function showNotification(message, isSuccess = true) {
@@ -720,17 +542,6 @@ CREATE TABLE users (
                 notification.style.display = 'none';
             }, 3000);
         }
-        
-        // Tab functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.getElementById(`${tab.dataset.tab}-content`).classList.add('active');
-            });
-        });
         
         // Theme toggle functionality
         const themeToggle = document.getElementById('theme-toggle');
@@ -782,6 +593,28 @@ CREATE TABLE users (
             }
         });
         
+        // Test API connection
+        const testApiBtn = document.getElementById('test-api-btn');
+        const apiStatus = document.getElementById('api-status');
+        
+        testApiBtn.addEventListener('click', async function() {
+            apiStatus.innerHTML = 'Testing connection...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/threads`);
+                if (response.ok) {
+                    apiStatus.innerHTML = '<span style="color: green;">Connected successfully!</span>';
+                    showNotification('API connection successful!');
+                } else {
+                    apiStatus.innerHTML = `<span style="color: red;">Error: ${response.status} ${response.statusText}</span>`;
+                    showNotification('API connection failed', false);
+                }
+            } catch (error) {
+                apiStatus.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+                showNotification('API connection failed', false);
+            }
+        });
+        
         // Handle thread form submission
         const threadForm = document.getElementById('thread-form');
         
@@ -794,25 +627,21 @@ CREATE TABLE users (
             
             if (title && author && content) {
                 try {
-                    // In a real implementation, this would call your Cloudflare Worker API
-                    // const response = await fetch(`${API_BASE}/api/threads`, {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //     },
-                    //     body: JSON.stringify({ title, content, author }),
-                    // });
-                    // 
-                    // if (!response.ok) {
-                    //     throw new Error('Failed to create thread');
-                    // }
-                    // 
-                    // const result = await response.json();
+                    const response = await fetch(`${API_BASE}/api/threads`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ title, content, author }),
+                    });
                     
-                    // Simulate API call for demo purposes
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
                     
-                    // For demo, we'll just add the thread to the UI
+                    const result = await response.json();
+                    
+                    // Add the thread to the UI
                     const threadList = document.getElementById('thread-list');
                     const threadEl = document.createElement('div');
                     threadEl.className = 'thread';
@@ -879,65 +708,82 @@ CREATE TABLE users (
             }
         });
         
-        // Load initial threads (simulated)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simulate loading threads from API
-            setTimeout(() => {
-                const threads = [
-                    {
-                        id: 1,
-                        title: 'How to set up Cloudflare R1 database?',
-                        author: 'cloudDev',
-                        date: '2 hours ago',
-                        replies: 5,
-                        views: 42
-                    },
-                    {
-                        id: 2,
-                        title: 'Best practices for Cloudflare Workers',
-                        author: 'apiExpert',
-                        date: '5 hours ago',
-                        replies: 3,
-                        views: 28
-                    },
-                    {
-                        id: 3,
-                        title: 'Using D1 with Cloudflare Pages',
-                        author: 'webMaster',
-                        date: '1 day ago',
-                        replies: 12,
-                        views: 67
-                    }
-                ];
+        // Load threads from API
+        async function loadThreads() {
+            const loadingElement = document.getElementById('loading');
+            const threadList = document.getElementById('thread-list');
+            
+            try {
+                loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading threads from database...';
                 
-                const threadList = document.getElementById('thread-list');
+                const response = await fetch(`${API_BASE}/api/threads`);
                 
-                threads.forEach(thread => {
-                    const threadEl = document.createElement('div');
-                    threadEl.className = 'thread';
-                    threadEl.innerHTML = `
-                        <div class="thread-icon">
-                            <i class="fas fa-question"></i>
-                        </div>
-                        <div class="thread-content">
-                            <a href="#" class="thread-title">${thread.title}</a>
-                            <div class="thread-meta">Started by <strong>${thread.author}</strong>, ${thread.date}</div>
-                            <div class="thread-stats">
-                                <span class="thread-stat"><i class="fas fa-comments"></i> ${thread.replies} replies</span>
-                                <span class="thread-stat"><i class="fas fa-eye"></i> ${thread.views} views</span>
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Remove loading indicator
+                loadingElement.style.display = 'none';
+                
+                if (data.results && data.results.length > 0) {
+                    // Display threads from database
+                    data.results.forEach(thread => {
+                        const threadEl = document.createElement('div');
+                        threadEl.className = 'thread';
+                        threadEl.innerHTML = `
+                            <div class="thread-icon">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <div class="thread-content">
+                                <a href="#" class="thread-title">${thread.title}</a>
+                                <div class="thread-meta">Started by <strong>${thread.author}</strong>, ${new Date(thread.created_at).toLocaleDateString()}</div>
+                                <div class="thread-stats">
+                                    <span class="thread-stat"><i class="fas fa-comments"></i> 0 replies</span>
+                                    <span class="thread-stat"><i class="fas fa-eye"></i> 0 views</span>
+                                </div>
+                            </div>
+                        `;
+                        threadList.appendChild(threadEl);
+                    });
+                    
+                    // Update stats
+                    document.getElementById('threads-count').textContent = data.results.length;
+                    apiStatus.innerHTML = '<span style="color: green;">Connected successfully! Loaded threads from database.</span>';
+                } else {
+                    // No threads in database
+                    threadList.innerHTML = `
+                        <div class="thread">
+                            <div class="thread-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="thread-content">
+                                <div class="thread-title">No threads yet</div>
+                                <div class="thread-meta">Be the first to create a thread!</div>
                             </div>
                         </div>
                     `;
-                    threadList.appendChild(threadEl);
-                });
+                    apiStatus.innerHTML = '<span style="color: green;">Connected successfully! No threads in database yet.</span>';
+                }
                 
-                // Update stats
-                document.getElementById('threads-count').textContent = threads.length;
-                document.getElementById('posts-count').textContent = threads.reduce((acc, thread) => acc + thread.replies, 0);
-                document.getElementById('users-count').textContent = 15;
-                document.getElementById('online-count').textContent = 3;
-                
-            }, 500);
+            } catch (error) {
+                console.error('Error loading threads:', error);
+                loadingElement.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i> Error loading threads: ${error.message}
+                    </div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button onclick="loadThreads()" class="btn"><i class="fas fa-redo"></i> Try Again</button>
+                    </div>
+                `;
+                apiStatus.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+            }
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadThreads();
         });
     </script>
 </body>
