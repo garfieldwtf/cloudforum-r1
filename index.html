@@ -546,7 +546,7 @@
             top: 100%;
             background-color: var(--card-bg);
             min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px极速时时彩
             z-index: 1;
             border-radius: 4px;
             border: 1px solid var(--border);
@@ -567,6 +567,49 @@
         
         .profile-menu:hover .profile-dropdown {
             display: block;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .pagination-info {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .page-btn {
+            padding: 5px 10px;
+            border: 1px solid var(--border);
+            background-color: var(--card-bg);
+            color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .page-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .page-btn:hover:not(.active) {
+            background-color: var(--light);
+        }
+        
+        .items-per-page {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         @media (max-width: 768px) {
@@ -604,6 +647,11 @@
                 width: 100%;
                 justify-content: flex-end;
             }
+            
+            .pagination {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -622,7 +670,7 @@
                 
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                    <input type极速时时彩" id="login-password" placeholder="Enter your password" required>
                 </div>
                 
                 <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
@@ -636,7 +684,7 @@
     <div id="register-modal" class="modal">
         <div class="modal-content">
             <span class="close" id="close-register">&times;</span>
-            <h2><i class="fas fa-user-plus"></i> Register for CloudForum</h2>
+            <h2><i极速时时彩 class="fas fa-user-plus"></i> Register for CloudForum</h2>
             <form id="register-form">
                 <div class="form-group">
                     <label for="register-username">Username</label>
@@ -648,7 +696,7 @@
                     <input type="email" id="register-email" placeholder="Enter your email" required>
                 </div>
                 
-                <div class="form-group">
+                <极速时时彩div class="form-group">
                     <label for="register-password">Password</label>
                     <input type="password" id="register-password" placeholder="Create a password" required>
                 </div>
@@ -667,7 +715,7 @@
     </div>
     
     <div id="profile-modal" class="modal">
-        <div class="modal-content">
+        <div class极速时时彩="modal-content">
             <span class="close" id="close-profile">&times;</span>
             <h2><i class="fas fa-user"></i> Edit Profile</h2>
             <form id="profile-form">
@@ -684,18 +732,18 @@
                 
                 <div class="form-group">
                     <label for="profile-password">New Password (leave blank to keep current)</label>
-                    <input type="password" id="profile-password" placeholder="New password">
+                    <input type="password" id="profile-password" placeholder极速时时彩="New password">
                 </div>
                 
                 <div class="form-group">
-                    <label for="profile-password-confirm">Confirm New Password</label>
+                    <label for极速时时彩="profile-password-confirm">Confirm New Password</label>
                     <input type="password" id="profile-password-confirm" placeholder="Confirm new password">
                 </div>
                 
                 <div class="form-group">
                     <label for="profile-current-password">Current Password (required to save changes)</label>
                     <input type="password" id="profile-current-password" placeholder="Current password" required>
-                </div>
+                </极速时时彩div>
                 
                 <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
             </form>
@@ -746,7 +794,7 @@
                 
                 <div class="form-group">
                     <label for="edit-user-email">Email</label>
-                    <input type="email" id="edit-user-email" required>
+                    <input type="email" id极速时时彩="edit-user-email" required>
                 </div>
                 
                 <div class="form-group">
@@ -761,6 +809,27 @@
                 <div class="form-group">
                     <label for="edit-user-password">New Password (leave blank to keep current)</label>
                     <input type="password" id="edit-user-password" placeholder="New password">
+                </div>
+                
+                <button type="submit" class="btn"><i class="fas极速时时彩 fa-save"></i> Save Changes</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="edit-post-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-edit-post">&times;</span>
+            <h2><i class="fas fa-edit"></i> Edit Post</h2>
+            <form id="edit-post-form">
+                <input type="hidden" id="edit-post-id">
+                <div class="form-group">
+                    <label for="edit-post-title">Title</label>
+                    <input type="text" id="edit-post-title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-post-content">Content</label>
+                    <textarea id="edit-post-content" rows="6" required></textarea>
                 </div>
                 
                 <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
@@ -810,7 +879,7 @@
                 <div class="stat-label">Users</div>
             </div>
             <div class="stat">
-                <div class="stat-number" id="online-count">1</div>
+                <div class极速时时彩="stat-number" id="online-count">1</div>
                 <div class="stat-label">Online</div>
             </div>
         </div>
@@ -825,6 +894,16 @@
                     <p class="form-help">Create a new user with admin privileges</p>
                 </div>
                 
+                <div class="items-per-page">
+                    <label for="users-per-page">Users per page:</label>
+                    <select id="users-per-page">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                
                 <h4>All Users</h4>
                 <ul class="user-list" id="user-list">
                     <li class="user-item">
@@ -834,14 +913,33 @@
                         </div>
                         <div class="user-actions">
                             <button class="btn btn-sm btn-outline edit-user-btn" data-id="1" data-username="admin" data-email="admin@example.com" data-role="admin">Edit</button>
-                            <button class="btn btn-sm btn-danger delete-user-btn" data-id="1">Delete</button>
+                            <button class="btn btn-sm btn-danger delete-user-btn" data-id="1" data-username="admin">Delete</button>
                         </div>
                     </li>
                 </ul>
+                
+                <div class="pagination" id="user-pagination">
+                    <div class="pagination-info" id="user-pagination-info">Showing 1-1 of 1 users</div>
+                    <div class="pagination-controls">
+                        <button class="page-btn" id="user-prev-btn" disabled>Previous</button>
+                        <span class="page-btn active">1</span>
+                        <button class="page-btn" id="user-next-btn" disabled>Next</button>
+                    </div>
+                </div>
             </div>
             
             <div class="admin-section">
                 <h3>Content Moderation</h3>
+                <div class="items-per-page">
+                    <label for="posts-per-page">Posts per page:</label>
+                    <select id="posts-per-page">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                
                 <h4>Recent Posts</h4>
                 <ul class="post-list" id="post-list">
                     <li class="post-item">
@@ -850,11 +948,20 @@
                             <div>By: admin • 2 hours ago</div>
                         </div>
                         <div class="post-actions">
-                            <button class="btn btn-sm btn-outline edit-post-btn" data-id="1">Edit</button>
+                            <button class="btn btn-sm btn-outline edit-post-btn" data-id="1" data-title="Welcome to the forum!" data-content="This is the first post in our forum. Welcome everyone!">Edit</button>
                             <button class="btn btn-sm btn-danger delete-post-btn" data-id="1">Delete</button>
                         </div>
                     </li>
                 </ul>
+                
+                <div class="pagination" id="post-pagination">
+                    <div class="pagination-info" id="post-pagination-info">Showing 1-1 of 1 posts</div>
+                    <div class="pagination-controls">
+                        <button class="page-btn" id="post-prev-btn" disabled>Previous</button>
+                        <span class="page-btn active">1</span>
+                        <button class="page-btn" id="post-next-btn" disabled>Next</button>
+                    </div>
+                </div>
             </div>
             
             <div class="admin-section">
@@ -866,7 +973,7 @@
         
         <div class="forum-header">
             <h2>Recent Discussions</h2>
-            <button id="new-thread-btn" class="btn"><i class="fas fa-plus"></i> New Thread</button>
+            <button id="new极速时时彩-thread-btn" class="btn"><极速时时彩i class="fas fa-plus"></i> New Thread</button>
         </div>
         
         <div class="thread-list" id="thread-list">
@@ -898,7 +1005,7 @@
         </div>
         
         <div id="new-thread-form" class="new-thread-form" style="display: none;">
-            <h2 class="form-title">Create a New Thread</h2>
+            <h2 class="form-title">Create a New Thread</极速时时彩h2>
             <form id="thread-form">
                 <div class="form-group">
                     <label for="thread-title">Title</label>
@@ -947,8 +1054,14 @@
             { id: 1, username: 'admin', email: 'admin@example.com', role: 'admin' }
         ];
         let allPosts = [
-            { id: 1, title: 'Welcome to the forum!', author: 'admin', date: '2 hours ago' }
+            { id: 1, title: 'Welcome to the forum!', author: 'admin', date: '2 hours ago', content: 'This is the first post in our forum. Welcome everyone!' }
         ];
+        
+        // Pagination state
+        let userPage = 1;
+        let postPage = 1;
+        let usersPerPage = 10;
+        let postsPerPage = 10;
         
         // Show notification function
         function showNotification(message, isSuccess = true) {
@@ -1057,7 +1170,7 @@
             const username = document.getElementById('register-username').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
-            const passwordConfirm = document.getElementById('register-password-confirm').value;
+           极速时时彩 const passwordConfirm = document.getElementById('register-password-confirm').value;
             
             if (password !== passwordConfirm) {
                 showNotification('Passwords do not match!', false);
@@ -1109,7 +1222,7 @@
         document.getElementById('profile-link').addEventListener('click', function() {
             if (!currentUser) return;
             
-            document.getElementById('profile-username').value = currentUser.username;
+            document.getElementById极速时时彩('profile-username').value = currentUser.username;
             document.getElementById('profile-email').value = currentUser.email;
             document.getElementById('profile-modal').style.display = 'flex';
         });
@@ -1273,10 +1386,39 @@
             document.querySelectorAll('.edit-post-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const postId = this.getAttribute('data-id');
-                    showNotification(`Edit post functionality would open for post ID: ${postId}`);
+                    const title = this.getAttribute('data-title');
+                    const content = this.getAttribute('data-content');
+                    
+                    document.getElementById('edit-post-id').value = postId;
+                    document.getElementById('edit-post-title').value = title;
+                    document.getElementById('edit-post-content').value = content;
+                    
+                    document.getElementById('edit-post-modal').style.display = 'flex';
                 });
             });
         }
+        
+        document.getElementById('edit-post-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const postId = parseInt(document.getElementById('edit-post-id').value);
+            const title = document.getElementById('edit-post-title').value;
+            const content = document.getElementById('edit-post-content').value;
+            
+            // Find post and update
+            const postIndex = allPosts.findIndex(p => p.id === postId);
+            if (postIndex !== -1) {
+                allPosts[postIndex].title = title;
+                allPosts[postIndex].content = content;
+                
+                // Render updated post list
+                renderPostList();
+                
+                // Close modal and show notification
+                document.getElementById('edit-post-modal').style.display = 'none';
+                showNotification('Post updated successfully!');
+            }
+        });
         
         // Delete post functionality
         function setupDeletePostButtons() {
@@ -1297,12 +1439,71 @@
             });
         }
         
-        // Render user list
+        // Render user list with pagination
         function renderUserList() {
             const userList = document.getElementById('user-list');
             userList.innerHTML = '';
             
-            allUsers.forEach(user => {
+            // Calculate pagination
+            const startIndex = (userPage - 1) * usersPerPage;
+            const endIndex = Math.min(startIndex + usersPerPage, allUsers.length);
+            const paginatedUsers = allUsers.slice(startIndex, endIndex);
+            
+            // Update pagination info
+            document.getElementById('user-pagination-info').textContent = 
+                `Showing ${startIndex + 1}-${endIndex} of ${allUsers.length} users`;
+            
+            // Update pagination controls
+            document.getElementById('user-prev-btn').disabled = userPage === 1;
+            document.getElementById('user-next-btn').disabled = endIndex >= allUsers.length;
+            
+            // Clear existing page buttons
+            const paginationControls = document.querySelector('#user-pagination .pagination-controls');
+            paginationControls.innerHTML = '';
+            
+            // Add previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.id = 'user-prev-btn';
+            prevBtn.textContent = 'Previous';
+            prevBtn.disabled = userPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (userPage > 1) {
+                    userPage--;
+                    renderUserList();
+                }
+            });
+            paginationControls.appendChild(prevBtn);
+            
+            // Add page buttons
+            const totalPages = Math.ceil(allUsers.length / usersPerPage);
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('span');
+                pageBtn.className = `page-btn ${i === userPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    userPage = i;
+                    renderUserList();
+                });
+                paginationControls.appendChild(pageBtn);
+            }
+            
+            // Add next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.id = 'user-next-btn';
+            nextBtn.textContent = 'Next';
+            nextBtn.disabled = endIndex >= allUsers.length;
+            nextBtn.addEventListener('click', () => {
+                if (endIndex < allUsers.length) {
+                    userPage++;
+                    renderUserList();
+                }
+            });
+            paginationControls.appendChild(nextBtn);
+            
+            // Render users
+            paginatedUsers.forEach(user => {
                 const userItem = document.createElement('li');
                 userItem.className = 'user-item';
                 
@@ -1332,12 +1533,71 @@
             setupDeleteUserButtons();
         }
         
-        // Render post list
+        // Render post list with pagination
         function renderPostList() {
             const postList = document.getElementById('post-list');
             postList.innerHTML = '';
             
-            allPosts.forEach(post => {
+            // Calculate pagination
+            const startIndex = (postPage - 1) * postsPerPage;
+            const endIndex = Math.min(startIndex + postsPerPage, allPosts.length);
+            const paginatedPosts = allPosts.slice(startIndex, endIndex);
+            
+            // Update pagination info
+            document.getElementById('post-pagination-info').textContent = 
+                `Showing ${startIndex + 1}-${endIndex} of ${allPosts.length} posts`;
+            
+            // Update pagination controls
+            document.getElementById('post-prev-btn').disabled = postPage === 1;
+            document.getElementById('post-next-btn').disabled = endIndex >= allPosts.length;
+            
+            // Clear existing page buttons
+            const paginationControls = document.querySelector('#post-pagination .pagination-controls');
+            paginationControls.innerHTML = '';
+            
+            // Add previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.id = 'post-prev-btn';
+            prevBtn.textContent = 'Previous';
+            prevBtn.disabled = postPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (postPage > 1) {
+                    postPage--;
+                    renderPostList();
+                }
+            });
+            paginationControls.appendChild(prevBtn);
+            
+            // Add page buttons
+            const totalPages = Math.ceil(allPosts.length / postsPerPage);
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('span');
+                pageBtn.className = `page-btn ${i === postPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click极速时时彩', () => {
+                    postPage = i;
+                    renderPostList();
+                });
+                paginationControls.appendChild(pageBtn);
+            }
+            
+            // Add next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.id = 'post-next-btn';
+            nextBtn.textContent = 'Next';
+            nextBtn.disabled = endIndex >= allPosts.length;
+            nextBtn.addEventListener('click', () => {
+                if (endIndex < allPosts.length) {
+                    postPage++;
+                    renderPostList();
+                }
+            });
+            paginationControls.appendChild(nextBtn);
+            
+            // Render posts
+            paginatedPosts.forEach(post => {
                 const postItem = document.createElement('li');
                 postItem.className = 'post-item';
                 
@@ -1347,7 +1607,7 @@
                         <div>By: ${post.author} • ${post.date}</div>
                     </div>
                     <div class="post-actions">
-                        <button class="btn btn-sm btn-outline edit-post-btn" data-id="${post.id}">Edit</button>
+                        <button class="btn btn-sm btn-outline edit-post-btn" data-id="${post.id}" data-title="${post.title}" data-content="${post.content}">Edit</button>
                         <button class="btn btn-sm btn-danger delete-post-btn" data-id="${post.id}">Delete</button>
                     </div>
                 `;
@@ -1395,7 +1655,7 @@
                     behavior: 'smooth'
                 });
             } else {
-                newThreadForm.style.display = 'none';
+                new极速时时彩ThreadForm.style.display = 'none';
             }
         });
         
@@ -1447,6 +1707,10 @@
             document.getElementById('edit-user-modal').style.display = 'none';
         });
         
+        document.getElementById('close-edit-post').addEventListener('click', function() {
+            document.getElementById('edit-post-modal').style.display = 'none';
+        });
+        
         window.addEventListener('click', function(event) {
             if (event.target === loginModal) {
                 loginModal.style.display = 'none';
@@ -1463,6 +1727,9 @@
             if (event.target === document.getElementById('edit-user-modal')) {
                 document.getElementById('edit-user-modal').style.display = 'none';
             }
+            if (event.target === document.getElementById('edit-post-modal')) {
+                document.getElementById('edit-post-modal').style.display = 'none';
+            }
         });
         
         // Test API connection
@@ -1478,7 +1745,7 @@
                     apiStatus.innerHTML = '<span style="color: green;">Connected successfully!</span>';
                     showNotification('API connection successful!');
                 } else {
-                    apiStatus.innerHTML = `<span style="color: red;">Error: ${response.status} ${response.statusText}</span>`;
+                    apiStatus.innerHTML = `<span style="color: red;">Error: ${极速时时彩response.status} ${response.statusText}</span>`;
                     showNotification('API connection failed', false);
                 }
             } catch (error) {
@@ -1521,16 +1788,27 @@
                     
                     const result = await response.json();
                     
+                    // Add the thread to our local array
+                    const newPost = {
+                        id: result.id || Date.now(),
+                        title: title,
+                        author: currentUser.username,
+                        date: 'just now',
+                        content: content
+                    };
+                    
+                    allPosts.unshift(newPost);
+                    
                     // Add the thread to the UI
                     const threadList = document.getElementById('thread-list');
                     const threadEl = document.createElement('div');
                     threadEl.className = 'thread';
-                    threadEl.dataset.id = result.id;
+                    threadEl.dataset.id = newPost.id;
                     threadEl.innerHTML = `
                         <div class="thread-icon">
                             <i class="fas fa-comment"></i>
                         </div>
-                        <div class="thread-content">
+                        <div class极速时时彩="thread-content">
                             <div class="thread-title">${title}</div>
                             <div class="thread-meta">Started by <strong>${currentUser.username}</strong>, just now</div>
                             <div class="thread-stats">
@@ -1542,14 +1820,14 @@
                     
                     // Add click event to view thread
                     threadEl.addEventListener('click', function() {
-                        viewThread(result.id, title);
+                        viewThread(newPost.id, title);
                     });
                     
                     threadList.prepend(threadEl);
                     
                     // Update stats
                     document.getElementById('threads-count').textContent = 
-                        parseInt(document.getElementById('threads-count').textContent) + 1;
+                        parseInt(document.getElementById('thread极速时时彩s-count').textContent) + 1;
                     
                     // Reset form and hide it
                     threadForm.reset();
@@ -1594,24 +1872,36 @@
                 // In a real app, this would fetch from your API
                 // For demo, we'll simulate loading
                 setTimeout(() => {
+                    const post = allPosts.find(p => p.id === threadId) || {
+                        title: 'Demo Thread',
+                        author: 'admin',
+                        date: '2 hours ago',
+                        content: 'This is the content of the thread. In a real application, this would be loaded from the database.'
+                    };
+                    
                     threadPosts.innerHTML = `
                         <div class="post">
                             <div class="post-header">
-                                <span class="post-author">Demo User <span class="admin-badge">ADMIN</span></span>
-                                <span class="post-date">2 hours ago</span>
+                                <span class="post-author">${post.author} <span class="admin-badge">ADMIN</span></span>
+                                <span class="post-date">${post.date}</span>
                             </div>
                             <div class="post-content">
-                                <p>This is the content of the thread. In a real application, this would be loaded from the database.</p>
-                                <p>You can reply to this thread using the form below.</p>
+                                <p>${post.content}</p>
                             </div>
                             ${currentUser && currentUser.role === 'admin' ? `
                             <div class="post-actions">
-                                <button class="btn btn-sm btn-outline"><i class="fas fa-edit"></i> Edit</button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                                <button class="btn btn-sm btn-outline edit-post-btn" data-id="${threadId}" data-title="${post.title}" data-content="${post.content}"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn btn-sm btn-danger delete-post-btn" data-id="${threadId}"><i class="fas fa-trash"></i> Delete</button>
                             </div>
                             ` : ''}
                         </div>
                     `;
+                    
+                    // Set up event listeners for edit/delete buttons
+                    if (currentUser && currentUser.role === 'admin') {
+                        setupEditPostButtons();
+                        setupDeletePostButtons();
+                    }
                     
                     // Show reply form if user is logged in
                     if (currentUser) {
@@ -1666,7 +1956,7 @@
                     
                 } catch (error) {
                     console.error('Error posting reply:', error);
-                    showNotification('Error posting reply: ' + error.message, false);
+                    showNotification('Error posting reply: '极速时时彩 + error.message, false);
                 }
             }
         });
@@ -1704,8 +1994,8 @@
                                 <div class="thread-title">${thread.title}</div>
                                 <div class="thread-meta">Started by <strong>${thread.author}</strong>, ${new Date(thread.created_at).toLocaleDateString()}</div>
                                 <div class="thread-stats">
-                                    <span class="thread-stat"><i class="fas fa-comments"></i> 0 replies</span>
-                                    <span class="thread-stat"><i class="fas fa-eye"></i> 0 views</span>
+                                    <span class极速时时彩="thread-stat"><i class="fas fa-comments"></i> 0 replies</span>
+                                    <span class="thread-stat"><极速时时彩i class="fas fa-eye"></i> 0 views</span>
                                 </div>
                             </div>
                         `;
@@ -1724,7 +2014,7 @@
                 } else {
                     // No threads in database
                     threadList.innerHTML = `
-                        <div class="thread">
+                        <极速时时彩div class="thread">
                             <div class="thread-icon">
                                 <i class="fas fa-info-circle"></i>
                             </div>
@@ -1770,6 +2060,19 @@
             if (!currentUser || currentUser.role !== 'admin') {
                 document.getElementById('connection-status').style.display = 'none';
             }
+            
+            // Items per page change handlers
+            document.getElementById('users-per-page').addEventListener('change', function() {
+                usersPerPage = parseInt(this.value);
+                userPage = 1;
+                renderUserList();
+            });
+            
+            document.getElementById('posts-per-page').addEventListener('change', function() {
+                postsPerPage = parseInt(this.value);
+                postPage = 1;
+                renderPostList();
+            });
         });
     </script>
 </body>
