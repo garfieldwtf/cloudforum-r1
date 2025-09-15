@@ -398,10 +398,63 @@
             display: none;
             z-index: 1000;
         }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="notification" id="notification"></div>
+    
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-login">&times;</span>
+            <h2><i class="fas fa-sign-in-alt"></i> Login to CloudForum</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </form>
+            <p style="margin-top: 20px; text-align: center;">
+                Don't have an account? <a href="#" id="register-link">Register here</a>
+            </p>
+        </div>
+    </div>
     
     <header>
         <div class="container header-content">
@@ -457,108 +510,109 @@
                 <li>Log in to your Cloudflare dashboard and select "Pages"</li>
                 <li>Click "Create a project" and connect your GitHub account</li>
                 <li>Select the repository containing your forum</li>
-                <li>Configure build settings (if needed) and click "Deploy"</li>
+                <li>Configure build settings (no build command needed for static HTML)</li>
+                <li>Click "Deploy"</li>
                 <li>Create an R1 database in the Cloudflare dashboard</li>
                 <li>Create a Worker to handle database operations</li>
             </ol>
             
             <h3><i class="fas fa-code"></i> Example Worker Code for R1 Database</h3>
             <div class="code-block">
-// worker.js - Cloudflare Worker for R1 SQL database<br>
-export default {<br>
-  async fetch(request, env) {<br>
-    const url = new URL(request.url);<br>
-    <br>
-    // Handle CORS preflight requests<br>
-    if (request.method === 'OPTIONS') {<br>
-      return new Response(null, {<br>
-        headers: {<br>
-          'Access-Control-Allow-Origin': '*',<br>
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',<br>
-          'Access-Control-Allow-Headers': 'Content-Type',<br>
-        },<br>
-      });<br>
-    }<br>
-    <br>
-    // Handle API routes<br>
-    if (url.pathname === '/api/threads' && request.method === 'GET') {<br>
-      // Get all threads from R1 database<br>
-      try {<br>
-        const result = await env.DB.prepare('SELECT * FROM threads ORDER BY created_at DESC').all();<br>
-        return new Response(JSON.stringify(result), {<br>
-          headers: { <br>
-            'Content-Type': 'application/json',<br>
-            'Access-Control-Allow-Origin': '*'<br>
-          }<br>
-        });<br>
-      } catch (error) {<br>
-        return new Response(JSON.stringify({ error: error.message }), { <br>
-          status: 500,<br>
-          headers: { <br>
-            'Content-Type': 'application/json',<br>
-            'Access-Control-Allow-Origin': '*'<br>
-          }<br>
-        });<br>
-      }<br>
-    }<br>
-    <br>
-    if (url.pathname === '/api/threads' && request.method === 'POST') {<br>
-      // Create a new thread in R1 database<br>
-      try {<br>
-        const data = await request.json();<br>
-        const { title, content, author } = data;<br>
-        <br>
-        const result = await env.DB.prepare(<br>
-          'INSERT INTO threads (title, content, author) VALUES (?, ?, ?)'<br>
-        ).bind(title, content, author).run();<br>
-        <br>
-        return new Response(JSON.stringify({ success: true, id: result.meta.last_row_id }), {<br>
-          headers: { <br>
-            'Content-Type': 'application/json',<br>
-            'Access-Control-Allow-Origin': '*'<br>
-          }<br>
-        });<br>
-      } catch (error) {<br>
-        return new Response(JSON.stringify({ error: error.message }), { <br>
-          status: 500,<br>
-          headers: { <br>
-            'Content-Type': 'application/json',<br>
-            'Access-Control-Allow-Origin': '*'<br>
-          }<br>
-        });<br>
-      }<br>
-    }<br>
-    <br>
-    return new Response('Not found', { status: 404 });<br>
-  }<br>
+// worker.js - Cloudflare Worker for R1 SQL database
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    
+    // Handle CORS preflight requests
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
+    }
+    
+    // Handle API routes
+    if (url.pathname === '/api/threads' && request.method === 'GET') {
+      // Get all threads from R1 database
+      try {
+        const result = await env.DB.prepare('SELECT * FROM threads ORDER BY created_at DESC').all();
+        return new Response(JSON.stringify(result), {
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), { 
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+      }
+    }
+    
+    if (url.pathname === '/api/threads' && request.method === 'POST') {
+      // Create a new thread in R1 database
+      try {
+        const data = await request.json();
+        const { title, content, author } = data;
+        
+        const result = await env.DB.prepare(
+          'INSERT INTO threads (title, content, author) VALUES (?, ?, ?)'
+        ).bind(title, content, author).run();
+        
+        return new Response(JSON.stringify({ success: true, id: result.meta.last_row_id }), {
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), { 
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+      }
+    }
+    
+    return new Response('Not found', { status: 404 });
+  }
 }
             </div>
             
             <h3><i class="fas fa-table"></i> Database Schema</h3>
             <div class="code-block">
--- SQL to create the necessary tables in R1<br>
-CREATE TABLE threads (<br>
-  id INTEGER PRIMARY KEY AUTOINCREMENT,<br>
-  title TEXT NOT NULL,<br>
-  content TEXT NOT NULL,<br>
-  author TEXT NOT NULL,<br>
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP<br>
-);<br>
-<br>
-CREATE TABLE posts (<br>
-  id INTEGER PRIMARY KEY AUTOINCREMENT,<br>
-  thread_id INTEGER NOT NULL,<br>
-  content TEXT NOT NULL,<br>
-  author TEXT NOT NULL,<br>
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,<br>
-  FOREIGN KEY (thread_id) REFERENCES threads (id)<br>
-);<br>
-<br>
-CREATE TABLE users (<br>
-  id INTEGER PRIMARY KEY AUTOINCREMENT,<br>
-  username TEXT UNIQUE NOT NULL,<br>
-  email TEXT UNIQUE NOT NULL,<br>
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP<br>
+-- SQL to create the necessary tables in R1
+CREATE TABLE threads (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  author TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE posts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  thread_id INTEGER NOT NULL,
+  content TEXT NOT NULL,
+  author TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (thread_id) REFERENCES threads (id)
+);
+
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
             </div>
         </div>
@@ -583,26 +637,6 @@ CREATE TABLE users (<br>
                 
                 <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Post Thread</button>
             </form>
-        </div>
-        
-        <div id="login-modal" class="new-thread-form" style="display: none;">
-            <h2 class="form-title">Login to CloudForum</h2>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-username">Username</label>
-                    <input type="text" id="login-username" placeholder="Enter your username" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter your password" required>
-                </div>
-                
-                <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
-            </form>
-            <p style="margin-top: 20px; text-align: center;">
-                Don't have an account? <a href="#" id="register-link">Register here</a>
-            </p>
         </div>
     </main>
     
@@ -660,19 +694,21 @@ CREATE TABLE users (<br>
             }
         });
         
-        // Toggle login form
+        // Toggle login modal
         const loginBtn = document.getElementById('login-btn');
         const loginModal = document.getElementById('login-modal');
+        const closeLogin = document.getElementById('close-login');
         
         loginBtn.addEventListener('click', function() {
-            if (loginModal.style.display === 'none') {
-                loginModal.style.display = 'block';
-                newThreadForm.style.display = 'none';
-                window.scrollTo({
-                    top: loginModal.offsetTop - 20,
-                    behavior: 'smooth'
-                });
-            } else {
+            loginModal.style.display = 'flex';
+        });
+        
+        closeLogin.addEventListener('click', function() {
+            loginModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target === loginModal) {
                 loginModal.style.display = 'none';
             }
         });
