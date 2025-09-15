@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudForum - Cloudflare R1 SQL Integration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6cf7;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --background: #f5f7f9;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --border: #dee2e6;
+        }
+
+        .dark-mode {
+            --background: #1a1d21;
+            --card-bg: #2a2e35;
+            --text: #e4e6eb;
+            --border: #3e4248;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #2a48a3 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        header h1 i {
+            font-size: 1.8rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: #3651b1;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .forum-stats {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        
+        .stat {
+            padding: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        .forum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .thread-list {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+        
+        .thread {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+        
+        .thread:last-child {
+            border-bottom: none;
+        }
+        
+        .thread-icon {
+            background-color: rgba(74, 108, 247, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .thread-content {
+            flex: 1;
+        }
+        
+        .thread-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 5px;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .thread-title:hover {
+            color: var(--primary);
+        }
+        
+        .thread-meta {
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+        
+        .thread-stats {
+            display: flex;
+            margin-top: 5px;
+            gap: 15px;
+        }
+        
+        .thread-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+        
+        .new-thread-form {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+        
+        .form-title {
+            margin-bottom: 20px;
+            color: var(--text);
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            color: var(--secondary);
+            border-top: 1px solid var(--border);
+        }
+        
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .forum-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .thread {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .thread-icon {
+                margin-bottom: 15px;
+            }
+            
+            .forum-stats {
+                flex-wrap: wrap;
+            }
+        }
+
+        .cloudflare-info {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .cloudflare-info h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .steps {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .steps li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background-color: var(--dark);
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            background-color: var(--success);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification"></div>
+    
+    <header>
+        <div class="container header-content">
+            <h1><i class="fas fa-database"></i> CloudForum R1</h1>
+            <div class="header-actions">
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="theme-switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
+                <button class="btn" id="login-btn"><i class="fas fa-user"></i> Login</button>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="forum-stats">
+            <div class="stat">
+                <div class="stat-number" id="threads-count">0</div>
+                <div class="stat-label">Threads</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="posts-count">0</div>
+                <div class="stat-label">Posts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="users-count">0</div>
+                <div class="stat-label">Users</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="online-count">0</div>
+                <div class="stat-label">Online</div>
+            </div>
+        </div>
+        
+        <div class="forum-header">
+            <h2>Recent Discussions</h2>
+            <button id="new-thread-btn" class="btn"><i class="fas fa-plus"></i> New Thread</button>
+        </div>
+        
+        <div class="thread-list" id="thread-list">
+            <!-- Threads will be loaded here -->
+        </div>
+        
+        <div class="cloudflare-info">
+            <h2><i class="fas fa-cloud-upload-alt"></i> Deploying to Cloudflare with R1 Database</h2>
+            <p>This forum is designed to work with Cloudflare Pages and R1 SQL database. Follow these steps:</p>
+            <ol class="steps">
+                <li>Create a GitHub repository and upload your forum files</li>
+                <li>Log in to your Cloudflare dashboard and select "Pages"</li>
+                <li>Click "Create a project" and connect your GitHub account</li>
+                <li>Select the repository containing your forum</li>
+                <li>Configure build settings (if needed) and click "Deploy"</li>
+                <li>Create an R1 database in the Cloudflare dashboard</li>
+                <li>Create a Worker to handle database operations</li>
+            </ol>
+            
+            <h3><i class="fas fa-code"></i> Example Worker Code for R1 Database</h3>
+            <div class="code-block">
+// worker.js - Cloudflare Worker for R1 SQL database<br>
+export default {<br>
+  async fetch(request, env) {<br>
+    const url = new URL(request.url);<br>
+    <br>
+    // Handle CORS preflight requests<br>
+    if (request.method === 'OPTIONS') {<br>
+      return new Response(null, {<br>
+        headers: {<br>
+          'Access-Control-Allow-Origin': '*',<br>
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',<br>
+          'Access-Control-Allow-Headers': 'Content-Type',<br>
+        },<br>
+      });<br>
+    }<br>
+    <br>
+    // Handle API routes<br>
+    if (url.pathname === '/api/threads' && request.method === 'GET') {<br>
+      // Get all threads from R1 database<br>
+      try {<br>
+        const result = await env.DB.prepare('SELECT * FROM threads ORDER BY created_at DESC').all();<br>
+        return new Response(JSON.stringify(result), {<br>
+          headers: { <br>
+            'Content-Type': 'application/json',<br>
+            'Access-Control-Allow-Origin': '*'<br>
+          }<br>
+        });<br>
+      } catch (error) {<br>
+        return new Response(JSON.stringify({ error: error.message }), { <br>
+          status: 500,<br>
+          headers: { <br>
+            'Content-Type': 'application/json',<br>
+            'Access-Control-Allow-Origin': '*'<br>
+          }<br>
+        });<br>
+      }<br>
+    }<br>
+    <br>
+    if (url.pathname === '/api/threads' && request.method === 'POST') {<br>
+      // Create a new thread in R1 database<br>
+      try {<br>
+        const data = await request.json();<br>
+        const { title, content, author } = data;<br>
+        <br>
+        const result = await env.DB.prepare(<br>
+          'INSERT INTO threads (title, content, author) VALUES (?, ?, ?)'<br>
+        ).bind(title, content, author).run();<br>
+        <br>
+        return new Response(JSON.stringify({ success: true, id: result.meta.last_row_id }), {<br>
+          headers: { <br>
+            'Content-Type': 'application/json',<br>
+            'Access-Control-Allow-Origin': '*'<br>
+          }<br>
+        });<br>
+      } catch (error) {<br>
+        return new Response(JSON.stringify({ error: error.message }), { <br>
+          status: 500,<br>
+          headers: { <br>
+            'Content-Type': 'application/json',<br>
+            'Access-Control-Allow-Origin': '*'<br>
+          }<br>
+        });<br>
+      }<br>
+    }<br>
+    <br>
+    return new Response('Not found', { status: 404 });<br>
+  }<br>
+}
+            </div>
+            
+            <h3><i class="fas fa-table"></i> Database Schema</h3>
+            <div class="code-block">
+-- SQL to create the necessary tables in R1<br>
+CREATE TABLE threads (<br>
+  id INTEGER PRIMARY KEY AUTOINCREMENT,<br>
+  title TEXT NOT NULL,<br>
+  content TEXT NOT NULL,<br>
+  author TEXT NOT NULL,<br>
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP<br>
+);<br>
+<br>
+CREATE TABLE posts (<br>
+  id INTEGER PRIMARY KEY AUTOINCREMENT,<br>
+  thread_id INTEGER NOT NULL,<br>
+  content TEXT NOT NULL,<br>
+  author TEXT NOT NULL,<br>
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,<br>
+  FOREIGN KEY (thread_id) REFERENCES threads (id)<br>
+);<br>
+<br>
+CREATE TABLE users (<br>
+  id INTEGER PRIMARY KEY AUTOINCREMENT,<br>
+  username TEXT UNIQUE NOT NULL,<br>
+  email TEXT UNIQUE NOT NULL,<br>
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP<br>
+);
+            </div>
+        </div>
+        
+        <div id="new-thread-form" class="new-thread-form" style="display: none;">
+            <h2 class="form-title">Create a New Thread</h2>
+            <form id="thread-form">
+                <div class="form-group">
+                    <label for="thread-title">Title</label>
+                    <input type="text" id="thread-title" placeholder="Enter a descriptive title for your thread" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="thread-author">Your Name</label>
+                    <input type="text" id="thread-author" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="thread-content">Content</label>
+                    <textarea id="thread-content" placeholder="Write your post here..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Post Thread</button>
+            </form>
+        </div>
+        
+        <div id="login-modal" class="new-thread-form" style="display: none;">
+            <h2 class="form-title">Login to CloudForum</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </form>
+            <p style="margin-top: 20px; text-align: center;">
+                Don't have an account? <a href="#" id="register-link">Register here</a>
+            </p>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>© 2023 CloudForum R1. This forum is designed to work with Cloudflare Pages and R1 SQL database.</p>
+            <p>In a real implementation, data would be stored in Cloudflare's R1 database via Workers.</p>
+        </div>
+    </footer>
+
+    <script>
+        // API base URL - would be your Cloudflare Worker URL in production
+        const API_BASE = 'https://your-worker.your-account.workers.dev';
+        
+        // Show notification function
+        function showNotification(message, isSuccess = true) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = isSuccess ? '#28a745' : '#dc3545';
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        // Set initial theme based on system preference
+        if (prefersDarkScheme.matches) {
+            document.body.classList.add('dark-mode');
+            themeToggle.checked = true;
+        }
+        
+        // Toggle theme when switch is clicked
+        themeToggle.addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+        
+        // Toggle new thread form
+        const newThreadBtn = document.getElementById('new-thread-btn');
+        const newThreadForm = document.getElementById('new-thread-form');
+        
+        newThreadBtn.addEventListener('click', function() {
+            if (newThreadForm.style.display === 'none') {
+                newThreadForm.style.display = 'block';
+                window.scrollTo({
+                    top: newThreadForm.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            } else {
+                newThreadForm.style.display = 'none';
+            }
+        });
+        
+        // Toggle login form
+        const loginBtn = document.getElementById('login-btn');
+        const loginModal = document.getElementById('login-modal');
+        
+        loginBtn.addEventListener('click', function() {
+            if (loginModal.style.display === 'none') {
+                loginModal.style.display = 'block';
+                newThreadForm.style.display = 'none';
+                window.scrollTo({
+                    top: loginModal.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            } else {
+                loginModal.style.display = 'none';
+            }
+        });
+        
+        // Handle thread form submission
+        const threadForm = document.getElementById('thread-form');
+        
+        threadForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('thread-title').value;
+            const author = document.getElementById('thread-author').value;
+            const content = document.getElementById('thread-content').value;
+            
+            if (title && author && content) {
+                try {
+                    // In a real implementation, this would call your Cloudflare Worker API
+                    // const response = await fetch(`${API_BASE}/api/threads`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    //     body: JSON.stringify({ title, content, author }),
+                    // });
+                    // 
+                    // if (!response.ok) {
+                    //     throw new Error('Failed to create thread');
+                    // }
+                    // 
+                    // const result = await response.json();
+                    
+                    // Simulate API call for demo purposes
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // For demo, we'll just add the thread to the UI
+                    const threadList = document.getElementById('thread-list');
+                    const threadEl = document.createElement('div');
+                    threadEl.className = 'thread';
+                    threadEl.innerHTML = `
+                        <div class="thread-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="thread-content">
+                            <a href="#" class="thread-title">${title}</a>
+                            <div class="thread-meta">Started by <strong>${author}</strong>, just now</div>
+                            <div class="thread-stats">
+                                <span class="thread-stat"><i class="fas fa-comments"></i> 0 replies</span>
+                                <span class="thread-stat"><i class="fas fa-eye"></i> 0 views</span>
+                            </div>
+                        </div>
+                    `;
+                    threadList.prepend(threadEl);
+                    
+                    // Update stats
+                    document.getElementById('threads-count').textContent = 
+                        parseInt(document.getElementById('threads-count').textContent) + 1;
+                    
+                    // Reset form and hide it
+                    threadForm.reset();
+                    newThreadForm.style.display = 'none';
+                    
+                    // Show success message
+                    showNotification('Your thread has been posted successfully!');
+                    
+                } catch (error) {
+                    console.error('Error creating thread:', error);
+                    showNotification('Error creating thread: ' + error.message, false);
+                }
+            }
+        });
+        
+        // Handle login form submission
+        const loginForm = document.getElementById('login-form');
+        
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (username && password) {
+                try {
+                    // Simulate login API call
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // For demo, we'll just show a success message
+                    showNotification(`Logged in as ${username}`);
+                    
+                    // Update login button
+                    loginBtn.innerHTML = `<i class="fas fa-user"></i> ${username}`;
+                    
+                    // Hide login form
+                    loginModal.style.display = 'none';
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showNotification('Login failed: ' + error.message, false);
+                }
+            }
+        });
+        
+        // Load initial threads (simulated)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate loading threads from API
+            setTimeout(() => {
+                const threads = [
+                    {
+                        id: 1,
+                        title: 'How to set up Cloudflare R1 database?',
+                        author: 'cloudDev',
+                        date: '2 hours ago',
+                        replies: 5,
+                        views: 42
+                    },
+                    {
+                        id: 2,
+                        title: 'Best practices for Cloudflare Workers',
+                        author: 'apiExpert',
+                        date: '5 hours ago',
+                        replies: 3,
+                        views: 28
+                    },
+                    {
+                        id: 3,
+                        title: 'Using D1 with Cloudflare Pages',
+                        author: 'webMaster',
+                        date: '1 day ago',
+                        replies: 12,
+                        views: 67
+                    }
+                ];
+                
+                const threadList = document.getElementById('thread-list');
+                
+                threads.forEach(thread => {
+                    const threadEl = document.createElement('div');
+                    threadEl.className = 'thread';
+                    threadEl.innerHTML = `
+                        <div class="thread-icon">
+                            <i class="fas fa-question"></i>
+                        </div>
+                        <div class="thread-content">
+                            <a href="#" class="thread-title">${thread.title}</a>
+                            <div class="thread-meta">Started by <strong>${thread.author}</strong>, ${thread.date}</div>
+                            <div class="thread-stats">
+                                <span class="thread-stat"><i class="fas fa-comments"></i> ${thread.replies} replies</span>
+                                <span class="thread-stat"><i class="fas fa-eye"></i> ${thread.views} views</span>
+                            </div>
+                        </div>
+                    `;
+                    threadList.appendChild(threadEl);
+                });
+                
+                // Update stats
+                document.getElementById('threads-count').textContent = threads.length;
+                document.getElementById('posts-count').textContent = threads.reduce((acc, thread) => acc + thread.replies, 0);
+                document.getElementById('users-count').textContent = 15;
+                document.getElementById('online-count').textContent = 3;
+                
+            }, 500);
+        });
+    </script>
+</body>
+</html>
