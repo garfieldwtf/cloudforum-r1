@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudForum - Complete Forum with Admin</title>
+    <title>CloudForum - Complete Admin System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -117,6 +117,15 @@
             background-color: #c82333;
         }
         
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
         .btn-outline {
             background-color: transparent;
             border: 2px solid var(--primary);
@@ -126,6 +135,11 @@
         .btn-outline:hover {
             background-color: var(--primary);
             color: white;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.875rem;
         }
         
         .forum-stats {
@@ -236,7 +250,7 @@
             color: var(--secondary);
         }
         
-        .new-thread-form, .login-form, .register-form {
+        .new-thread-form, .login-form, .register-form, .profile-form {
             background-color: var(--card-bg);
             padding: 25px;
             border-radius: 8px;
@@ -285,6 +299,12 @@
         .form-group textarea {
             min-height: 200px;
             resize: vertical;
+        }
+        
+        .form-help {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-top: 5px;
         }
         
         footer {
@@ -410,6 +430,7 @@
         .post {
             padding: 20px;
             border-bottom: 1px solid var(--border);
+            position: relative;
         }
         
         .post:last-child {
@@ -420,6 +441,7 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 15px;
+            align-items: center;
         }
         
         .post-author {
@@ -436,8 +458,23 @@
             line-height: 1.6;
         }
         
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
         .admin-badge {
             background-color: var(--danger);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+        
+        .moderator-badge {
+            background-color: var(--info);
             color: white;
             padding: 2px 8px;
             border-radius: 4px;
@@ -453,6 +490,83 @@
             margin-bottom: 30px;
             border: 1px solid var(--border);
             display: none;
+        }
+        
+        .admin-section {
+            margin-bottom: 30px;
+        }
+        
+        .admin-section h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .user-list, .post-list {
+            list-style: none;
+        }
+        
+        .user-item, .post-item {
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info, .post-info {
+            flex: 1;
+        }
+        
+        .user-actions, .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .connection-status {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+        
+        .profile-menu {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: var(--card-bg);
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            margin-top: 5px;
+        }
+        
+        .profile-dropdown a {
+            color: var(--text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+        }
+        
+        .profile-dropdown a:hover {
+            background-color: rgba(74, 108, 247, 0.1);
+        }
+        
+        .profile-menu:hover .profile-dropdown {
+            display: block;
         }
         
         @media (max-width: 768px) {
@@ -478,6 +592,17 @@
             
             .forum-stats {
                 flex-wrap: wrap;
+            }
+            
+            .user-item, .post-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .user-actions, .post-actions {
+                width: 100%;
+                justify-content: flex-end;
             }
         }
     </style>
@@ -541,6 +666,42 @@
         </div>
     </div>
     
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-profile">&times;</span>
+            <h2><i class="fas fa-user"></i> Edit Profile</h2>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="profile-username">Username</label>
+                    <input type="text" id="profile-username" placeholder="Username" readonly>
+                    <p class="form-help">Username cannot be changed</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-password">New Password (leave blank to keep current)</label>
+                    <input type="password" id="profile-password" placeholder="New password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-password-confirm">Confirm New Password</label>
+                    <input type="password" id="profile-password-confirm" placeholder="Confirm new password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-current-password">Current Password (required to save changes)</label>
+                    <input type="password" id="profile-current-password" placeholder="Current password" required>
+                </div>
+                
+                <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
+            </form>
+        </div>
+    </div>
+    
     <header>
         <div class="container header-content">
             <h1><i class="fas fa-database"></i> CloudForum R1</h1>
@@ -553,9 +714,16 @@
                     </label>
                     <i class="fas fa-moon"></i>
                 </div>
-                <span id="user-greeting" style="display: none;">Welcome, <span id="username-display"></span></span>
+                <span id="user-greeting" style="display: none;">
+                    <div class="profile-menu">
+                        Welcome, <span id="username-display"></span>
+                        <div class="profile-dropdown">
+                            <a id="profile-link"><i class="fas fa-user"></i> Profile</a>
+                            <a id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </span>
                 <button class="btn" id="login-btn"><i class="fas fa-user"></i> Login</button>
-                <button class="btn" id="logout-btn" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 <button class="btn btn-success" id="admin-btn" style="display: none;"><i class="fas fa-cog"></i> Admin</button>
             </div>
         </div>
@@ -583,11 +751,47 @@
         
         <div id="admin-panel" class="admin-panel">
             <h2><i class="fas fa-cog"></i> Admin Panel</h2>
-            <div class="form-group">
-                <button class="btn btn-danger" id="create-admin-btn"><i class="fas fa-user-shield"></i> Create Admin User</button>
-                <p class="form-help">Click to create an admin user with username "admin" and password "admin123"</p>
+            
+            <div class="admin-section">
+                <h3>User Management</h3>
+                <div class="form-group">
+                    <button class="btn btn-success" id="create-admin-btn"><i class="fas fa-user-shield"></i> Create Admin User</button>
+                    <p class="form-help">Click to create an admin user with username "admin" and password "admin123"</p>
+                </div>
+                
+                <h4>All Users</h4>
+                <ul class="user-list" id="user-list">
+                    <li class="user-item">
+                        <div class="user-info">
+                            <strong>admin</strong> <span class="admin-badge">ADMIN</span>
+                            <div>admin@example.com</div>
+                        </div>
+                        <div class="user-actions">
+                            <button class="btn btn-sm btn-outline">Edit</button>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div class="form-group">
+            
+            <div class="admin-section">
+                <h3>Content Moderation</h3>
+                <h4>Recent Posts</h4>
+                <ul class="post-list" id="post-list">
+                    <li class="post-item">
+                        <div class="post-info">
+                            <strong>Welcome to the forum!</strong>
+                            <div>By: admin • 2 hours ago</div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="btn btn-sm btn-outline">Edit</button>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="admin-section">
                 <h3>Database Management</h3>
                 <button class="btn" id="init-db-btn"><i class="fas fa-database"></i> Initialize Database</button>
                 <p class="form-help">Initialize the database with required tables</p>
@@ -644,7 +848,7 @@
             </form>
         </div>
         
-        <div class="new-thread-form">
+        <div id="connection-status" class="connection-status">
             <h2 class="form-title">Connection Status</h2>
             <div class="form-group">
                 <label>API Endpoint:</label>
@@ -663,7 +867,6 @@
     <footer>
         <div class="container">
             <p>© 2023 CloudForum R1. Connected to Cloudflare R1 Database via Worker.</p>
-            <p>API Endpoint: https://forum-api.garf.workers.dev/</p>
         </div>
     </footer>
 
@@ -674,6 +877,7 @@
         // Current user state
         let currentUser = null;
         let currentThread = null;
+        let allUsers = [];
         
         // Show notification function
         function showNotification(message, isSuccess = true) {
@@ -714,13 +918,16 @@
         // Update UI for logged in user
         function updateUIForLoggedInUser() {
             document.getElementById('login-btn').style.display = 'none';
-            document.getElementById('logout-btn').style.display = 'inline-flex';
             document.getElementById('user-greeting').style.display = 'inline';
             document.getElementById('username-display').textContent = currentUser.username;
             
+            // Show admin button if user is admin
             if (currentUser.role === 'admin') {
                 document.getElementById('admin-btn').style.display = 'inline-flex';
                 document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('connection-status').style.display = 'block';
+            } else {
+                document.getElementById('connection-status').style.display = 'none';
             }
         }
         
@@ -767,12 +974,11 @@
         });
         
         // Logout functionality
-        document.getElementById('logout-btn').addEventListener('click', function() {
+        document.getElementById('logout-link').addEventListener('click', function() {
             currentUser = null;
             localStorage.removeItem('currentUser');
             
             document.getElementById('login-btn').style.display = 'inline-flex';
-            document.getElementById('logout-btn').style.display = 'none';
             document.getElementById('user-greeting').style.display = 'none';
             document.getElementById('admin-btn').style.display = 'none';
             document.getElementById('admin-panel').style.display = 'none';
@@ -819,9 +1025,58 @@
             }
         });
         
+        // Profile functionality
+        document.getElementById('profile-link').addEventListener('click', function() {
+            if (!currentUser) return;
+            
+            document.getElementById('profile-username').value = currentUser.username;
+            document.getElementById('profile-email').value = currentUser.email;
+            document.getElementById('profile-modal').style.display = 'flex';
+        });
+        
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('profile-email').value;
+            const newPassword = document.getElementById('profile-password').value;
+            const confirmPassword = document.getElementById('profile-password-confirm').value;
+            const currentPassword = document.getElementById('profile-current-password').value;
+            
+            if (newPassword && newPassword !== confirmPassword) {
+                showNotification('New passwords do not match!', false);
+                return;
+            }
+            
+            // Update user info
+            currentUser.email = email;
+            
+            // Save to localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Close modal and show notification
+            document.getElementById('profile-modal').style.display = 'none';
+            showNotification('Profile updated successfully!');
+        });
+        
         // Admin functionality
         document.getElementById('create-admin-btn').addEventListener('click', function() {
             showNotification('Admin user created: username "admin", password "admin123"');
+            
+            // Add admin user to the list
+            const userList = document.getElementById('user-list');
+            const adminUser = document.createElement('li');
+            adminUser.className = 'user-item';
+            adminUser.innerHTML = `
+                <div class="user-info">
+                    <strong>admin</strong> <span class="admin-badge">ADMIN</span>
+                    <div>admin@example.com</div>
+                </div>
+                <div class="user-actions">
+                    <button class="btn btn-sm btn-outline">Edit</button>
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                </div>
+            `;
+            userList.appendChild(adminUser);
         });
         
         document.getElementById('init-db-btn').addEventListener('click', async function() {
@@ -897,12 +1152,20 @@
             registerModal.style.display = 'none';
         });
         
+        // Close profile modal
+        document.getElementById('close-profile').addEventListener('click', function() {
+            document.getElementById('profile-modal').style.display = 'none';
+        });
+        
         window.addEventListener('click', function(event) {
             if (event.target === loginModal) {
                 loginModal.style.display = 'none';
             }
             if (event.target === registerModal) {
                 registerModal.style.display = 'none';
+            }
+            if (event.target === document.getElementById('profile-modal')) {
+                document.getElementById('profile-modal').style.display = 'none';
             }
         });
         
@@ -1045,6 +1308,12 @@
                                 <p>This is the content of the thread. In a real application, this would be loaded from the database.</p>
                                 <p>You can reply to this thread using the form below.</p>
                             </div>
+                            ${currentUser && currentUser.role === 'admin' ? `
+                            <div class="post-actions">
+                                <button class="btn btn-sm btn-outline"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                            ` : ''}
                         </div>
                     `;
                     
@@ -1084,6 +1353,12 @@
                         <div class="post-content">
                             <p>${content}</p>
                         </div>
+                        ${currentUser.role === 'admin' ? `
+                        <div class="post-actions">
+                            <button class="btn btn-sm btn-outline"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                        ` : ''}
                     `;
                     threadPosts.appendChild(replyEl);
                     
@@ -1190,6 +1465,11 @@
                 const adminPanel = document.getElementById('admin-panel');
                 adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
             });
+            
+            // Hide connection status for non-admin users by default
+            if (!currentUser || currentUser.role !== 'admin') {
+                document.getElementById('connection-status').style.display = 'none';
+            }
         });
     </script>
 </body>
